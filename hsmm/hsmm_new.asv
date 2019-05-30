@@ -59,16 +59,17 @@ prev_LL = LL;
 %---------------    Initialization    ---------------
 ALPHA(:)=0; ALPHA=repmat(PAI,1,D).*P;		%Equation (13)
 %r=(B(:,O(1))'*sum(ALPHA,2));			%Equation (3)
-r=(poisspdf(O(1), lambda)*sum(ALPHA,2));
-bmx(:,1)=poisspdf(O(1), lambda)'./r;				%Equation (2)
+
+poisspdf(O(1), [2.8333, 6.5, 10.1667])
+bmx(:,1)=B(:,O(1))./r;				%Equation (2)
 E(:)=0; E(:,1)=bmx(:,1).*ALPHA(:,1);		%Equation (5)
 S(:)=0; S(:,1)=A'*E(:,1);			%Equation (6)
 lkh=log(r);
 %---------------    Induction    ---------------
 for t=2:T
     ALPHA=[repmat(S(:,t-1),1,D-1).*P(:,1:D-1)+repmat(bmx(:,t-1),1,D-1).*ALPHA(:,2:D),S(:,t-1).*P(:,D)];		%Equation (12)
-    r=(poisspdf(O(t), lambda)*sum(ALPHA,2));		%Equation (3)
-    bmx(:,t)=poisspdf(O(t), lambda)'./r;			%Equation (2)
+    r=(B(:,O(t))'*sum(ALPHA,2));		%Equation (3)
+    bmx(:,t)=B(:,O(t))./r;			%Equation (2)
     E(:,t)=bmx(:,t).*ALPHA(:,1);		%Equation (5)
     S(:,t)=A'*E(:,t);				%Equation (6)
     lkh=lkh+log(r);
@@ -76,13 +77,13 @@ end
 %++++++++ To check if the likelihood is increased ++++++++
 ll(ir)=lkh;
 LL = lkh;
-% if ir>1
-% % %    clock-starttime
-% %     %%%%%if (lkh-lkh1)/T<tolerance
-%     if (ll(ir)-ll(ir-1))/T<tolerance
-%         break
-%     end
-%  end
+if ir>1
+% %    clock-starttime
+%     %%%%%if (lkh-lkh1)/T<tolerance
+    if (ll(ir)-ll(ir-1))/T<tolerance
+        break
+    end
+ end
 %%%%%lkh1=lkh;
 
 %++++++++ Backward and Parameter Restimation ++++++++
@@ -125,11 +126,11 @@ prev_para = containers.Map(estimated_para.keys,estimated_para.values);
     Aest=Aest.*A;   A=Aest./repmat(sum(Aest,2),1,M);
     B=Best./repmat(sum(Best,2),1,K);
     for i=1:M
-        lambda(i) = B(i,:)*Vk;
+        est_lambdas(i) = B(i,:)*Vk;
     end
     Pest=Pest.*P;   P=Pest./repmat(sum(Pest,2),1,D);
     estimated_para('T') = Aest;
-    estimated_para('lambdas') = lambda';
+    estimated_para('lambdas') = est_lambdas;
     estimated_para('pi') = PAI;
     estimated_para('D') = Pest;
   end

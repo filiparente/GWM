@@ -1,4 +1,4 @@
-function [A,B,P,PAI,Vk,O,K]=hsmmInitialize_new(O,M,D,K,varargin)
+function [lambda, A,B,P,PAI,Vk,O,K]=hsmmInitialize_new(O,M,D,K,varargin)
 % 
 % Author: Shun-Zheng Yu
 % Available: http://sist.sysu.edu.cn/~syu/Publications/hsmmInitialize.m
@@ -46,9 +46,13 @@ function [A,B,P,PAI,Vk,O,K]=hsmmInitialize_new(O,M,D,K,varargin)
             P=P./(sum(P,2)*ones(1,D));
             %%
         case 'rand'
-            PAI=mkStochastic(rand(M,1));
-            A=mkStochastic(rand(M,M));
-            P=mkStochastic(rand(M,D));
+            %PAI=mkStochastic(rand(M,1));
+            %A=mkStochastic(rand(M,M));
+            %P=mkStochastic(rand(M,D));
+            PAI = generate_random_initial_dist(M);
+            A = generate_random_transition_matrix_d(M);
+            P = generate_random_dur_dist(M,D);
+            
             %%
         case 'diag'
             PAI=mkStochastic(rand(M,1));

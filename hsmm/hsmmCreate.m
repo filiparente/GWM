@@ -29,9 +29,9 @@ function [model]=hsmmCreate(O,M,D,K,varargin)
     );                   
 
 %Data check and convert it to column form
-if isrowvec(O)
-    O=O';
-end
+% if isrowvec(O)
+%     O=O';
+% end
 
 
 

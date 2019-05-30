@@ -15,10 +15,10 @@ function [A,B,P,PAI,Vk,O,K]=hsmmInitialize(O,M,D,K)
 %  2 of the License, or (at your option) any later version.
 %  http://www.gnu.org/licenses/gpl.txt
 %
-    [x,I]=sort(O);
-    tmp=([1;diff(x)]~=0);
+    [x,I]=sort(O);              %x is O by ascending order; I is the indexes in O
+    tmp=([1,diff(x)]~=0);       %find the places where the observed values change
     Vk=x(tmp);                  %observable values
-    Num=diff(find([tmp;1]==1));
+    Num=diff(find([tmp,1]==1)); %number of times each observable value from Vk appears in O
     if length(Vk)<K
         K=length(Vk);
     end
@@ -29,9 +29,9 @@ function [A,B,P,PAI,Vk,O,K]=hsmmInitialize(O,M,D,K)
         Num(J+1)=Num(J+1)+Num(J);
         Num(J)=[];
     end
-    Num=cumsum(Num);
+    Num=cumsum(Num);            %cummulative sum of the number of times the observable values are repeated in O
     tmp(:)=0;
-    tmp([1;Num(1:end-1)+1])=1;
+    tmp([1,Num(1:end-1)+1])=1;
     O(I)=cumsum(tmp);           %indexes of observable values
 
 %    PAI=rand(M,1)+1;
